@@ -92,3 +92,7 @@ app.get("/api/decision", async (req, res) => {
     return res.send("❌ Payment rejected. Client notified.");
   }
 });
+
+app.get("/", (req, res) => {
+  res.send("✅ Payment verifier backend is running.");
+});
