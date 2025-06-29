@@ -1,31 +1,23 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.mailersend.net",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.MAILERSEND_USERNAME,
-    pass: process.env.MAILERSEND_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendClientRejection(toEmail) {
-  const mailOptions = {
-    from: `"KVN Store" <${process.env.OWNER_EMAIL}>`,
-    to: toEmail,
-    subject: "❌ Issue with Your Payment",
-    html: `
-      <p>We could not verify your payment screenshot.</p>
-      <p>If you believe this is an error, please contact support at <b>22202024@rmd.ac.in</b></p>
-    `,
-  };
-
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("📩 Rejection Mail Sent:", info.messageId);
+    const result = await resend.emails.send({
+      from: `KVN Support <${process.env.FROM_EMAIL}>`,
+      to: toEmail,
+      subject: "❌ Payment Verification Failed",
+      html: `
+        <h2>We're Sorry 😔</h2>
+        <p>We couldn't verify your payment screenshot. Please make sure the uploaded screenshot is correct.</p>
+        <p>If you believe this was a mistake, kindly contact our support at <b>${process.env.SUPPORT_EMAIL}</b>.</p>
+      `,
+    });
+
+    console.log("📩 Rejection Email Sent:", result);
   } catch (error) {
     console.error("❌ Error sending rejection email:", error);
   }
