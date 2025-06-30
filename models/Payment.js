@@ -1,20 +1,24 @@
 import mongoose from "mongoose";
 
-const paymentSchema = new mongoose.Schema(
-  {
-    name: String,
-    email: String,
+const paymentSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  upiId: String,
+  amount: Number,
+  filename: String,
+  ocrText: {
+    fullText: String,
     upiId: String,
-    amount: String,
-    filename: String,
-    ocrText: String,
-    status: {
-      type: String,
-      enum: ["pending", "accept", "reject"],
-      default: "pending",
-    },
+    amountPaid: String,
+    time: String,
+    transactionId: String,
   },
-  { timestamps: true }
-);
+  status: {
+    type: String,
+    enum: ["pending", "accept", "reject"],
+    default: "pending",
+  },
+});
 
-export default mongoose.model("Payment", paymentSchema);
+export default mongoose.models.Payment ||
+  mongoose.model("Payment", paymentSchema);
