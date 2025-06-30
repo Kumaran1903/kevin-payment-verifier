@@ -1,8 +1,7 @@
-// mailerToClientReject.js
 import { Resend } from "resend";
 import dotenv from "dotenv";
-dotenv.config();
 
+dotenv.config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendClientRejection(toEmail) {
@@ -10,15 +9,14 @@ export async function sendClientRejection(toEmail) {
     const result = await resend.emails.send({
       from: `KVN Support <${process.env.FROM_EMAIL}>`,
       to: toEmail,
-      subject: "❌ Payment Rejected",
+      subject: "❌ Payment Verification Failed",
       html: `
         <h2>We're Sorry 😔</h2>
-        <p>We couldn’t verify your payment screenshot.</p>
-        <p>If this is a mistake, contact support: <b>${process.env.SUPPORT_EMAIL}</b></p>
+        <p>We couldn't verify your payment screenshot.</p>
+        <p>If this was a mistake, please contact support at <b>${process.env.SUPPORT_EMAIL}</b></p>
       `,
     });
-
-    console.log("📩 Rejection Email Sent:", result);
+    console.log("📩 Rejection email sent:", result);
   } catch (error) {
     console.error("❌ Error sending rejection email:", error);
   }

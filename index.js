@@ -1,3 +1,4 @@
+// server.js or index.js
 import express from "express";
 import multer from "multer";
 import dotenv from "dotenv";
@@ -42,13 +43,13 @@ app.post("/api/verify", upload.single("screenshot"), async (req, res) => {
     newEntry.ocrText = extractedText;
     await newEntry.save();
 
-    console.log("🧠 OCR Text:\n", extractedText);
+    console.log("\ud83e\udde0 OCR Text:\n", extractedText);
 
     await sendPaymentEmail({ name, email, upiId, amount, file, extractedText });
 
     res.status(200).json({ message: "Payment submission received!" });
   } catch (error) {
-    console.error("❌ Error in /api/verify:", error);
+    console.error("\u274c Error in /api/verify:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -57,29 +58,31 @@ app.get("/api/decision", async (req, res) => {
   const { status, email, key } = req.query;
 
   if (key !== process.env.VERIFICATION_SECRET)
-    return res.status(403).send("❌ Invalid key");
-  if (!email || !status) return res.status(400).send("❗ Missing parameters");
+    return res.status(403).send("\u274c Invalid key");
+  if (!email || !status)
+    return res.status(400).send("\u2757 Missing parameters");
 
   const entry = await Payment.findOne({ email });
-  if (!entry) return res.status(404).send("❌ No payment found");
+  if (!entry) return res.status(404).send("\u274c No payment found");
 
   entry.status = status;
   await entry.save();
 
   if (status === "accept") {
     await sendClientMail(email);
-    return res.send("✅ Accepted. Product sent.");
+    return res.send("\u2705 Accepted. Product sent.");
   } else {
     await sendClientRejection(email);
-    return res.send("❌ Rejected. Client notified.");
+    return res.send("\u274c Rejected. Client notified.");
   }
 });
 
 app.get("/", (req, res) => {
-  res.send("✅ Payment backend running");
+  res.send("\u2705 Payment backend running");
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Running at http://localhost:${PORT}`);
+  console.log(`\ud83d\ude80 Running at http://localhost:${PORT}`);
 });
+    
