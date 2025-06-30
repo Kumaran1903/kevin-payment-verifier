@@ -1,7 +1,8 @@
+// mailerToClientReject.js
 import { Resend } from "resend";
 import dotenv from "dotenv";
-
 dotenv.config();
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendClientRejection(toEmail) {
@@ -13,10 +14,11 @@ export async function sendClientRejection(toEmail) {
       html: `
         <h2>We're Sorry 😔</h2>
         <p>We couldn't verify your payment screenshot.</p>
-        <p>If this was a mistake, please contact support at <b>${process.env.SUPPORT_EMAIL}</b></p>
+        <p>If you believe this was a mistake, contact <b>${process.env.SUPPORT_EMAIL}</b>.</p>
       `,
     });
-    console.log("📩 Rejection email sent:", result);
+
+    console.log("📩 Rejection Email Sent:", result);
   } catch (error) {
     console.error("❌ Error sending rejection email:", error);
   }
