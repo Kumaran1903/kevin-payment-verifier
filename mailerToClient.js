@@ -12,9 +12,9 @@ export async function sendClientMail(toEmail) {
       to: toEmail,
       subject: "✅ Your Product is Ready!",
       html: `
-        <h2>Thank you for your payment!</h2>
-        <p>Your product is ready. Click the button below to download:</p>
-        <a href="${process.env.DUMMY_PRODUCT_URL}" style="padding: 10px 20px; background: green; color: white; text-decoration: none; border-radius: 6px;">Download Product</a>
+        <h2>Thanks for your payment!</h2>
+        <p>Your product is ready to download:</p>
+        <a href="${process.env.DUMMY_PRODUCT_URL}" style="padding:10px 20px; background:green; color:white; text-decoration:none; border-radius:6px;">Download Now</a>
       `,
     });
 

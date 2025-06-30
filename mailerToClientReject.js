@@ -1,3 +1,4 @@
+// mailerToClientReject.js
 import { Resend } from "resend";
 import dotenv from "dotenv";
 dotenv.config();
@@ -9,11 +10,11 @@ export async function sendClientRejection(toEmail) {
     const result = await resend.emails.send({
       from: `KVN Support <${process.env.FROM_EMAIL}>`,
       to: toEmail,
-      subject: "❌ Payment Verification Failed",
+      subject: "❌ Payment Rejected",
       html: `
         <h2>We're Sorry 😔</h2>
-        <p>We couldn't verify your payment screenshot. Please make sure the uploaded screenshot is correct.</p>
-        <p>If you believe this was a mistake, kindly contact our support at <b>${process.env.SUPPORT_EMAIL}</b>.</p>
+        <p>We couldn’t verify your payment screenshot.</p>
+        <p>If this is a mistake, contact support: <b>${process.env.SUPPORT_EMAIL}</b></p>
       `,
     });
 
