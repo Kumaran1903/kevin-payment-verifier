@@ -8,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function sendClientRejection(toEmail) {
   try {
     const result = await resend.emails.send({
-      from: `KVN Support <${process.env.FROM_EMAIL}>`,
+      from: `Kevinuniverse Support <${process.env.FROM_EMAIL}>`,
       to: toEmail,
       subject: "❌ Payment Verification Failed",
       html: `

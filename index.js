@@ -1,10 +1,8 @@
-// index.js
 import express from "express";
 import multer from "multer";
 import dotenv from "dotenv";
 import cors from "cors";
 import fs from "fs";
-import path from "path";
 
 import { sendClientMail } from "./mailerToClient.js";
 import { sendClientRejection } from "./mailerToClientReject.js";
@@ -24,8 +22,17 @@ connectDB();
 
 app.post("/api/verify", upload.single("screenshot"), async (req, res) => {
   try {
-    const { name, email, upiId, amount } = req.body;
+    const { name, email, amount, products: productsRaw } = req.body;
     const file = req.file;
+
+    let products = [];
+    if (productsRaw) {
+      try {
+        products = JSON.parse(productsRaw);
+      } catch {
+        return res.status(400).json({ error: "Invalid products format." });
+      }
+    }
 
     if (!file)
       return res.status(400).json({ error: "Screenshot is required." });
@@ -33,9 +40,8 @@ app.post("/api/verify", upload.single("screenshot"), async (req, res) => {
     const newEntry = new Payment({
       name,
       email,
-      upiId,
       amount,
-      filename: file.filename,
+      products,
     });
     await newEntry.save();
 
@@ -43,9 +49,16 @@ app.post("/api/verify", upload.single("screenshot"), async (req, res) => {
     newEntry.ocrText = extractedText;
     await newEntry.save();
 
-    console.log("\ud83e\udde0 OCR Text:\n", extractedText);
+    console.log("🧠 OCR Text:\n", extractedText);
 
-    await sendPaymentEmail({ name, email, upiId, amount, file, extractedText });
+    await sendPaymentEmail({
+      name,
+      email,
+      amount,
+      extractedText,
+      file,
+      products,
+    });
 
     res.status(200).json({ message: "Payment submission received!" });
   } catch (error) {
@@ -55,23 +68,16 @@ app.post("/api/verify", upload.single("screenshot"), async (req, res) => {
 });
 
 app.get("/api/decision", async (req, res) => {
-  const { status, email, key } = req.query;
+  const { status, email, products, key } = req.query;
 
   if (key !== process.env.VERIFICATION_SECRET)
     return res.status(403).send("❌ Invalid key");
-  if (!email || !status) return res.status(400).send("❗ Missing parameters");
-
-  const entry = await Payment.findOne({ email });
-  if (!entry) return res.status(404).send("❌ No payment found");
-
-  entry.status = status;
-  await entry.save();
 
   if (status === "accept") {
-    await sendClientMail(email);
+    await sendClientMail(email, products || []);
     return res.send("✅ Accepted. Product sent.");
   } else {
-    await sendClientRejection(email);
+    await sendClientRejection(entry.email);
     return res.send("❌ Rejected. Client notified.");
   }
 });
