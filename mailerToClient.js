@@ -8,7 +8,7 @@ dotenv.config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendClientMail(toEmail, productslist) {
-  try {     
+  try {
     await connectDB();
     const allProducts = await Product.find();
 
@@ -23,7 +23,7 @@ export async function sendClientMail(toEmail, productslist) {
         (product) => `
           <div style="margin-bottom: 16px;">
             <h3>${product.title}</h3>
-            <a href="${product.downloadLink}" style="padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px;">
+            <a href="${product.link}" style="padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px;">
               Download ${product.title}
             </a>
           </div>

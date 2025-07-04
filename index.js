@@ -77,7 +77,7 @@ app.get("/api/decision", async (req, res) => {
     await sendClientMail(email, products || []);
     return res.send("✅ Accepted. Product sent.");
   } else {
-    await sendClientRejection(entry.email);
+    await sendClientRejection(email);
     return res.send("❌ Rejected. Client notified.");
   }
 });
